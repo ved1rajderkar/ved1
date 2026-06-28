@@ -1,0 +1,313 @@
+[gd_scene load_steps=14 format=3 uid="uid://main_scene"]
+
+[ext_resource type="Script" path="res://scripts/game_manager.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/economy_manager.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/time_manager.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/building_system.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/ui_manager.gd" id="5"]
+[ext_resource type="Script" path="res://scripts/player_controller.gd" id="6"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMat"]
+sky_top_color = Color(0.35, 0.55, 0.85, 1)
+sky_horizon_color = Color(0.65, 0.75, 0.85, 1)
+ground_bottom_color = Color(0.2, 0.25, 0.15, 1)
+ground_horizon_color = Color(0.55, 0.6, 0.5, 1)
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("SkyMat")
+
+[sub_resource type="Environment" id="Env_main"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 2
+ambient_light_color = Color(0.6, 0.6, 0.65, 1)
+ambient_light_energy = 0.5
+tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0.7, 0.75, 0.85, 1)
+fog_density = 0.005
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
+size = Vector2(200, 200)
+
+[sub_resource type="StandardMaterial3D" id="Mat_ground"]
+albedo_color = Color(0.35, 0.55, 0.3, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(200, 0.1, 200)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
+radius = 0.5
+height = 1.8
+
+[node name="Main" type="Node3D"]
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("1")
+unique_name_in_owner = true
+
+[node name="EconomyManager" type="Node" parent="."]
+script = ExtResource("2")
+unique_name_in_owner = true
+
+[node name="TimeManager" type="Node" parent="."]
+script = ExtResource("3")
+unique_name_in_owner = true
+
+[node name="BuildingSystem" type="Node3D" parent="."]
+script = ExtResource("4")
+unique_name_in_owner = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env_main")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 20, 0)
+light_energy = 1.2
+shadow_enabled = true
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("PlaneMesh_ground")
+surface_material_override/0 = SubResource("Mat_ground")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("BoxShape3D_ground")
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+shape = SubResource("CapsuleShape3D_player")
+
+[node name="CameraPivot" type="Node3D" parent="Player"]
+
+[node name="Camera3D" type="Camera3D" parent="Player/CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 12)
+fov = 60.0
+
+[node name="UIManager" type="CanvasLayer" parent="."]
+script = ExtResource("5")
+unique_name_in_owner = true
+
+[node name="HUDPanel" type="Control" parent="UIManager"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 60.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="MoneyLabel" type="Label" parent="UIManager/HUDPanel"]
+offset_left = 16.0
+offset_top = 8.0
+offset_right = 200.0
+offset_bottom = 32.0
+text = "$5000"
+
+[node name="DayLabel" type="Label" parent="UIManager/HUDPanel"]
+offset_left = 216.0
+offset_top = 8.0
+offset_right = 416.0
+offset_bottom = 32.0
+text = "Day 1 - Monday"
+
+[node name="TimeLabel" type="Label" parent="UIManager/HUDPanel"]
+offset_left = 432.0
+offset_top = 8.0
+offset_right = 532.0
+offset_bottom = 32.0
+text = "06:00"
+
+[node name="SpeedLabel" type="Label" parent="UIManager/HUDPanel"]
+offset_left = 548.0
+offset_top = 8.0
+offset_right = 616.0
+offset_bottom = 32.0
+text = "1.0x"
+
+[node name="IncomeLabel" type="Label" parent="UIManager/HUDPanel"]
+offset_left = 16.0
+offset_top = 34.0
+offset_right = 200.0
+offset_bottom = 54.0
+text = "+$0/day"
+
+[node name="PauseButton" type="Button" parent="UIManager/HUDPanel"]
+offset_left = -120.0
+offset_top = 8.0
+offset_right = -16.0
+offset_bottom = 32.0
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+grow_horizontal = 0
+text = "Pause"
+
+[node name="BuildButton" type="Button" parent="UIManager/HUDPanel"]
+offset_left = -240.0
+offset_top = 34.0
+offset_right = -128.0
+offset_bottom = 54.0
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+grow_horizontal = 0
+text = "Build"
+
+[node name="BuildMenu" type="Control" parent="UIManager"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="UIManager/BuildMenu"]
+offset_left = 200.0
+offset_top = 80.0
+offset_right = 600.0
+offset_bottom = 480.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UIManager/BuildMenu/Panel"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Build Menu"
+horizontal_alignment = 1
+
+[node name="Separator" type="HSeparator" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="SmallShop" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Small Shop - $500"
+
+[node name="MediumShop" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Medium Shop - $1500"
+
+[node name="Warehouse" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Warehouse - $1000"
+
+[node name="Office" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Office - $2000"
+
+[node name="Factory" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Factory - $3000"
+
+[node name="Cafeteria" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Cafeteria - $800"
+
+[node name="Park" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Park - $400"
+
+[node name="SecurityHub" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Security Hub - $2500"
+
+[node name="CloseButton" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Close [ESC]"
+
+[node name="PauseMenu" type="Control" parent="UIManager"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Panel" type="PanelContainer" parent="UIManager/PauseMenu"]
+offset_left = 250.0
+offset_top = 150.0
+offset_right = 550.0
+offset_bottom = 350.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UIManager/PauseMenu/Panel"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="UIManager/PauseMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "PAUSED"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="UIManager/PauseMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Resume"
+
+[node name="SaveButton" type="Button" parent="UIManager/PauseMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Save Game"
+
+[node name="MainMenuButton" type="Button" parent="UIManager/PauseMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Main Menu"
+
+[node name="GameOverPanel" type="Control" parent="UIManager"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="UIManager/GameOverPanel"]
+offset_left = 200.0
+offset_top = 150.0
+offset_right = 600.0
+offset_bottom = 350.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UIManager/GameOverPanel/Panel"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="UIManager/GameOverPanel/Panel/VBoxContainer"]
+layout_mode = 2
+text = "GAME OVER"
+horizontal_alignment = 1
+
+[node name="RestartButton" type="Button" parent="UIManager/GameOverPanel/Panel/VBoxContainer"]
+layout_mode = 2
+text = "Restart"
+
+[node name="NotificationLabel" type="Label" parent="UIManager"]
+visible = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 70.0
+offset_right = 200.0
+offset_bottom = 100.0
+grow_horizontal = 2
+text = ""
+horizontal_alignment = 1

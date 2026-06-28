@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://building_scene"]
+
+[ext_resource type="PackedScene" uid="uid://placeholder" path="res://icon.svg" id="1_placeholder"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_default"]
+size = Vector3(4, 3, 4)
+
+[sub_resource type="StandardMaterial3D" id="Mat_default"]
+albedo_color = Color(0.6, 0.6, 0.6, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_default"]
+size = Vector3(4, 3, 4)
+
+[node name="Building" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_default")
+surface_material_override/0 = SubResource("Mat_default")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_default")
