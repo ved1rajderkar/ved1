@@ -1,313 +1,644 @@
-[gd_scene load_steps=14 format=3 uid="uid://main_scene"]
+[gd_scene format=3 uid="uid://b6tgbluju48ja"]
 
-[ext_resource type="Script" path="res://scripts/game_manager.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/economy_manager.gd" id="2"]
-[ext_resource type="Script" path="res://scripts/time_manager.gd" id="3"]
-[ext_resource type="Script" path="res://scripts/building_system.gd" id="4"]
-[ext_resource type="Script" path="res://scripts/ui_manager.gd" id="5"]
-[ext_resource type="Script" path="res://scripts/player_controller.gd" id="6"]
+[ext_resource type="Script" uid="uid://cttse645jemgc" path="res://scripts/building_system.gd" id="1"]
+[ext_resource type="Script" uid="uid://dk48wdfq3c5b0" path="res://scripts/player_controller.gd" id="2"]
+[ext_resource type="Script" uid="uid://yy66tjch8l6v" path="res://scripts/ui_manager.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/world_builder.gd" id="4"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat"]
-sky_top_color = Color(0.35, 0.55, 0.85, 1)
-sky_horizon_color = Color(0.65, 0.75, 0.85, 1)
-ground_bottom_color = Color(0.2, 0.25, 0.15, 1)
-ground_horizon_color = Color(0.55, 0.6, 0.5, 1)
+sky_top_color = Color(0.4, 0.6, 0.9, 1)
+sky_horizon_color = Color(0.7, 0.8, 0.95, 1)
+ground_bottom_color = Color(0.25, 0.3, 0.2, 1)
+ground_horizon_color = Color(0.6, 0.65, 0.55, 1)
 
-[sub_resource type="Sky" id="Sky_main"]
+[sub_resource type="Sky" id="Sky1"]
 sky_material = SubResource("SkyMat")
 
-[sub_resource type="Environment" id="Env_main"]
+[sub_resource type="Environment" id="Env1"]
 background_mode = 2
-sky = SubResource("Sky_main")
+sky = SubResource("Sky1")
 ambient_light_source = 2
-ambient_light_color = Color(0.6, 0.6, 0.65, 1)
-ambient_light_energy = 0.5
+ambient_light_color = Color(0.65, 0.65, 0.7, 1)
+ambient_light_energy = 0.6
 tonemap_mode = 2
 fog_enabled = true
-fog_light_color = Color(0.7, 0.75, 0.85, 1)
-fog_density = 0.005
+fog_light_color = Color(0.75, 0.8, 0.9, 1)
+fog_density = 0.003
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
-size = Vector2(200, 200)
+[sub_resource type="StandardMaterial3D" id="GroundMat"]
+albedo_color = Color(0.35, 0.5, 0.3, 1)
 
-[sub_resource type="StandardMaterial3D" id="Mat_ground"]
-albedo_color = Color(0.35, 0.55, 0.3, 1)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+[sub_resource type="BoxShape3D" id="GroundShape"]
 size = Vector3(200, 0.1, 200)
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
-radius = 0.5
-height = 1.8
+[sub_resource type="StandardMaterial3D" id="FloorMat"]
+albedo_color = Color(0.38, 0.35, 0.3, 1)
 
-[node name="Main" type="Node3D"]
+[sub_resource type="StandardMaterial3D" id="WallMat"]
+albedo_color = Color(0.85, 0.82, 0.75, 1)
 
-[node name="GameManager" type="Node" parent="."]
+[sub_resource type="StandardMaterial3D" id="CeilingMat"]
+albedo_color = Color(0.9, 0.88, 0.85, 1)
+
+[node name="Main" type="Node3D" unique_id=941021479]
+
+[node name="BuildingSystem" type="Node3D" parent="." unique_id=377084374]
 script = ExtResource("1")
-unique_name_in_owner = true
 
-[node name="EconomyManager" type="Node" parent="."]
-script = ExtResource("2")
-unique_name_in_owner = true
-
-[node name="TimeManager" type="Node" parent="."]
-script = ExtResource("3")
-unique_name_in_owner = true
-
-[node name="BuildingSystem" type="Node3D" parent="."]
+[node name="WorldBuilder" type="Node3D" parent="."]
 script = ExtResource("4")
-unique_name_in_owner = true
+city_radius = 80.0
+city_edge_buffer = 25.0
+building_count = 40
+vehicle_count = 15
+ai_count = 8
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Env_main")
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1245792196]
+environment = SubResource("Env1")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=557776708]
 transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 20, 0)
-light_energy = 1.2
+light_energy = 1.3
 shadow_enabled = true
+shadow_bias = 0.1
+directional_shadow_max_distance = 60.0
+directional_shadow_split_1 = 0.1
+directional_shadow_split_2 = 0.2
+directional_shadow_split_3 = 0.5
 
-[node name="Ground" type="StaticBody3D" parent="."]
+[node name="Ground" type="StaticBody3D" parent="." unique_id=2040642834]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
-mesh = SubResource("PlaneMesh_ground")
-surface_material_override/0 = SubResource("Mat_ground")
+[node name="Mesh" type="CSGBox3D" parent="Ground" unique_id=1067488532]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.17474937, -0.049998093, -0.029431343)
+size = Vector3(200, 0.1, 200)
+material = SubResource("GroundMat")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
-shape = SubResource("BoxShape3D_ground")
+[node name="Shape" type="CollisionShape3D" parent="Ground" unique_id=1978460137]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
+shape = SubResource("GroundShape")
 
-[node name="Player" type="CharacterBody3D" parent="."]
+[node name="StoreFloor" type="CSGBox3D" parent="." unique_id=1120995692]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.075, 0)
+use_collision = true
+size = Vector3(28, 0.15, 20)
+material = SubResource("FloorMat")
+
+[node name="WallBack" type="CSGBox3D" parent="." unique_id=864703093]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.075, -10.15)
+use_collision = true
+size = Vector3(28, 4, 0.3)
+material = SubResource("WallMat")
+
+[node name="WallLeft" type="CSGBox3D" parent="." unique_id=2093781840]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.15, 2.075, 0)
+use_collision = true
+size = Vector3(0.3, 4, 20)
+material = SubResource("WallMat")
+
+[node name="WallRight" type="CSGBox3D" parent="." unique_id=691400399]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.15, 2.075, 0)
+use_collision = true
+size = Vector3(0.3, 4, 20)
+material = SubResource("WallMat")
+
+[node name="WallFrontLeft" type="CSGBox3D" parent="." unique_id=1796184760]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 2.075, 10.15)
+use_collision = true
+size = Vector3(8, 4, 0.3)
+material = SubResource("WallMat")
+
+[node name="WallFrontRight" type="CSGBox3D" parent="." unique_id=747804928]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 2.075, 10.15)
+use_collision = true
+size = Vector3(8, 4, 0.3)
+material = SubResource("WallMat")
+
+[node name="Ceiling" type="CSGBox3D" parent="." unique_id=389864103]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.15, 0)
+size = Vector3(28, 0.15, 20)
+material = SubResource("CeilingMat")
+
+[node name="CounterBase" type="CSGBox3D" parent="." unique_id=1035671712]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 8.5)
+use_collision = true
+size = Vector3(6, 1.1, 1.2)
+material = SubResource("FloorMat")
+
+[node name="CounterTop" type="CSGBox3D" parent="." unique_id=713269389]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 8.5)
+use_collision = true
+size = Vector3(6.4, 0.1, 1.6)
+material = SubResource("FloorMat")
+
+[node name="Player" type="CharacterBody3D" parent="." unique_id=1660989806]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-script = ExtResource("6")
+collision_layer = 2
+script = ExtResource("2")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
-shape = SubResource("CapsuleShape3D_player")
+[node name="CameraPivot" type="Node3D" parent="Player" unique_id=1006067315]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
-[node name="CameraPivot" type="Node3D" parent="Player"]
-
-[node name="Camera3D" type="Camera3D" parent="Player/CameraPivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8, 12)
+[node name="Camera3D" type="Camera3D" parent="Player/CameraPivot" unique_id=1445931729]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 4)
+current = true
 fov = 60.0
+near = 0.1
+far = 45.0
 
-[node name="UIManager" type="CanvasLayer" parent="."]
-script = ExtResource("5")
-unique_name_in_owner = true
+[node name="RayCast3D" type="RayCast3D" parent="Player/CameraPivot/Camera3D" unique_id=645392581]
+target_position = Vector3(0, 0, -500)
+collision_mask = 3
 
-[node name="HUDPanel" type="Control" parent="UIManager"]
-anchors_preset = 10
+[node name="UIManager" type="CanvasLayer" parent="." unique_id=959946527]
+layer = 10
+script = ExtResource("3")
+
+[node name="HUD" type="Control" parent="UIManager" unique_id=1594854073]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
-offset_bottom = 60.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
-[node name="MoneyLabel" type="Label" parent="UIManager/HUDPanel"]
-offset_left = 16.0
-offset_top = 8.0
-offset_right = 200.0
-offset_bottom = 32.0
+[node name="MoneyRow" type="HBoxContainer" parent="UIManager/HUD" unique_id=1201052025]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 520.0
+offset_bottom = 50.0
+theme_override_constants/separation = 20
+
+[node name="MoneyLabel" type="Label" parent="UIManager/HUD/MoneyRow" unique_id=1346728464]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
 text = "$5000"
 
-[node name="DayLabel" type="Label" parent="UIManager/HUDPanel"]
-offset_left = 216.0
-offset_top = 8.0
-offset_right = 416.0
-offset_bottom = 32.0
+[node name="IncomeLabel" type="Label" parent="UIManager/HUD/MoneyRow" unique_id=817508006]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Income: $0/day"
+
+[node name="ProfitLabel" type="Label" parent="UIManager/HUD/MoneyRow" unique_id=1580853854]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Profit: $0/day"
+
+[node name="TimeRow" type="HBoxContainer" parent="UIManager/HUD" unique_id=1625990350]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 60.0
+offset_right = 520.0
+offset_bottom = 90.0
+theme_override_constants/separation = 20
+
+[node name="DayLabel" type="Label" parent="UIManager/HUD/TimeRow" unique_id=1931930827]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
 text = "Day 1 - Monday"
 
-[node name="TimeLabel" type="Label" parent="UIManager/HUDPanel"]
-offset_left = 432.0
-offset_top = 8.0
-offset_right = 532.0
-offset_bottom = 32.0
+[node name="TimeLabel" type="Label" parent="UIManager/HUD/TimeRow" unique_id=837659672]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
 text = "06:00"
 
-[node name="SpeedLabel" type="Label" parent="UIManager/HUDPanel"]
-offset_left = 548.0
-offset_top = 8.0
-offset_right = 616.0
-offset_bottom = 32.0
-text = "1.0x"
+[node name="SpeedLabel" type="Label" parent="UIManager/HUD/TimeRow" unique_id=218345603]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "1x"
 
-[node name="IncomeLabel" type="Label" parent="UIManager/HUDPanel"]
-offset_left = 16.0
-offset_top = 34.0
-offset_right = 200.0
-offset_bottom = 54.0
-text = "+$0/day"
+[node name="ResourceRow" type="HBoxContainer" parent="UIManager/HUD" unique_id=318841693]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 100.0
+offset_right = 620.0
+offset_bottom = 130.0
+theme_override_constants/separation = 20
 
-[node name="PauseButton" type="Button" parent="UIManager/HUDPanel"]
-offset_left = -120.0
-offset_top = 8.0
-offset_right = -16.0
-offset_bottom = 32.0
-anchors_preset = 1
+[node name="WorkersLabel" type="Label" parent="UIManager/HUD/ResourceRow" unique_id=1375334309]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Workers: 10"
+
+[node name="MaterialsLabel" type="Label" parent="UIManager/HUD/ResourceRow" unique_id=801658173]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Materials: 100"
+
+[node name="HappinessLabel" type="Label" parent="UIManager/HUD/ResourceRow" unique_id=896490007]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Happiness: 80%"
+
+[node name="ReputationLabel" type="Label" parent="UIManager/HUD/ResourceRow" unique_id=973369625]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Rep: 50"
+
+[node name="InfoRow" type="HBoxContainer" parent="UIManager/HUD" unique_id=115688709]
+layout_mode = 0
 anchor_left = 1.0
 anchor_right = 1.0
+offset_left = -220.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 50.0
 grow_horizontal = 0
-text = "Pause"
+theme_override_constants/separation = 20
 
-[node name="BuildButton" type="Button" parent="UIManager/HUDPanel"]
-offset_left = -240.0
-offset_top = 34.0
-offset_right = -128.0
-offset_bottom = 54.0
-anchors_preset = 1
+[node name="BuildingsLabel" type="Label" parent="UIManager/HUD/InfoRow" unique_id=616353058]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Buildings: 0"
+
+[node name="SpeedButtons" type="HBoxContainer" parent="UIManager/HUD" unique_id=986140939]
+layout_mode = 0
 anchor_left = 1.0
 anchor_right = 1.0
+offset_left = -220.0
+offset_top = 60.0
+offset_right = -20.0
+offset_bottom = 90.0
 grow_horizontal = 0
-text = "Build"
+theme_override_constants/separation = 5
 
-[node name="BuildMenu" type="Control" parent="UIManager"]
+[node name="Speed1" type="Button" parent="UIManager/HUD/SpeedButtons" unique_id=599332942]
+custom_minimum_size = Vector2(40, 24)
+layout_mode = 2
+text = "1x"
+
+[node name="Speed2" type="Button" parent="UIManager/HUD/SpeedButtons" unique_id=252733357]
+custom_minimum_size = Vector2(40, 24)
+layout_mode = 2
+text = "2x"
+
+[node name="Speed3" type="Button" parent="UIManager/HUD/SpeedButtons" unique_id=1753371939]
+custom_minimum_size = Vector2(40, 24)
+layout_mode = 2
+text = "3x"
+
+[node name="Speed4" type="Button" parent="UIManager/HUD/SpeedButtons" unique_id=625185814]
+custom_minimum_size = Vector2(40, 24)
+layout_mode = 2
+text = "4x"
+
+[node name="PauseBtn" type="Button" parent="UIManager/HUD" unique_id=1237437674]
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -140.0
+offset_top = 100.0
+offset_right = -20.0
+offset_bottom = 130.0
+grow_horizontal = 0
+text = "Pause [ESC]"
+
+[node name="BuildBtn" type="Button" parent="UIManager/HUD" unique_id=1449099232]
+custom_minimum_size = Vector2(140, 30)
+layout_mode = 0
+offset_left = 20.0
+offset_top = 140.0
+offset_right = 160.0
+offset_bottom = 170.0
+text = "Build [B]"
+
+[node name="BuildPanel" type="Control" parent="UIManager" unique_id=1457929842]
 visible = false
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="PanelContainer" parent="UIManager/BuildMenu"]
-offset_left = 200.0
-offset_top = 80.0
-offset_right = 600.0
-offset_bottom = 480.0
+[node name="Panel" type="PanelContainer" parent="UIManager/BuildPanel" unique_id=323903177]
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
+offset_left = -205.0
+offset_top = -215.0
+offset_right = 205.0
+offset_bottom = 215.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UIManager/BuildMenu/Panel"]
+[node name="MarginContainer" type="MarginContainer" parent="UIManager/BuildPanel/Panel" unique_id=1432764778]
 layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
 
-[node name="Title" type="Label" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UIManager/BuildPanel/Panel/MarginContainer" unique_id=903334328]
 layout_mode = 2
-text = "Build Menu"
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="UIManager/BuildPanel/Panel/MarginContainer/VBoxContainer" unique_id=1827691947]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "BUILD MENU"
 horizontal_alignment = 1
 
-[node name="Separator" type="HSeparator" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="UIManager/BuildPanel/Panel/MarginContainer/VBoxContainer" unique_id=1209064561]
 layout_mode = 2
 
-[node name="SmallShop" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="UIManager/BuildPanel/Panel/MarginContainer/VBoxContainer" unique_id=2039797144]
+custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
-text = "Small Shop - $500"
+size_flags_vertical = 3
 
-[node name="MediumShop" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+[node name="BuildGrid" type="GridContainer" parent="UIManager/BuildPanel/Panel/MarginContainer/VBoxContainer/ScrollContainer" unique_id=2343415]
 layout_mode = 2
-text = "Medium Shop - $1500"
+size_flags_horizontal = 3
+columns = 2
 
-[node name="Warehouse" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
-layout_mode = 2
-text = "Warehouse - $1000"
-
-[node name="Office" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
-layout_mode = 2
-text = "Office - $2000"
-
-[node name="Factory" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
-layout_mode = 2
-text = "Factory - $3000"
-
-[node name="Cafeteria" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
-layout_mode = 2
-text = "Cafeteria - $800"
-
-[node name="Park" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
-layout_mode = 2
-text = "Park - $400"
-
-[node name="SecurityHub" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
-layout_mode = 2
-text = "Security Hub - $2500"
-
-[node name="CloseButton" type="Button" parent="UIManager/BuildMenu/Panel/VBoxContainer"]
+[node name="CloseBtn" type="Button" parent="UIManager/BuildPanel/Panel/MarginContainer/VBoxContainer" unique_id=860978608]
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 text = "Close [ESC]"
 
-[node name="PauseMenu" type="Control" parent="UIManager"]
+[node name="UpgradePanel" type="Control" parent="UIManager" unique_id=1080744803]
 visible = false
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
 
-[node name="Panel" type="PanelContainer" parent="UIManager/PauseMenu"]
-offset_left = 250.0
-offset_top = 150.0
-offset_right = 550.0
-offset_bottom = 350.0
+[node name="Panel" type="PanelContainer" parent="UIManager/UpgradePanel" unique_id=1968515987]
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
+offset_left = -205.0
+offset_top = -150.0
+offset_right = 205.0
+offset_bottom = 150.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UIManager/PauseMenu/Panel"]
+[node name="MarginContainer" type="MarginContainer" parent="UIManager/UpgradePanel/Panel" unique_id=1343943853]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UIManager/UpgradePanel/Panel/MarginContainer" unique_id=586582901]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="NameLabel" type="Label" parent="UIManager/UpgradePanel/Panel/MarginContainer/VBoxContainer" unique_id=1756120291]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Display Shelf"
+
+[node name="LevelLabel" type="Label" parent="UIManager/UpgradePanel/Panel/MarginContainer/VBoxContainer" unique_id=1140434638]
+layout_mode = 2
+text = "Level 1 / 5"
+
+[node name="CostLabel" type="Label" parent="UIManager/UpgradePanel/Panel/MarginContainer/VBoxContainer" unique_id=195816918]
+layout_mode = 2
+text = "Upgrade Cost: $450"
+
+[node name="IncomeLabel" type="Label" parent="UIManager/UpgradePanel/Panel/MarginContainer/VBoxContainer" unique_id=2026495678]
+layout_mode = 2
+text = "Income: $40/day"
+
+[node name="HSeparator" type="HSeparator" parent="UIManager/UpgradePanel/Panel/MarginContainer/VBoxContainer" unique_id=2113077689]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="UIManager/PauseMenu/Panel/VBoxContainer"]
+[node name="UpgradeButton" type="Button" parent="UIManager/UpgradePanel/Panel/MarginContainer/VBoxContainer" unique_id=915949629]
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
+text = "Upgrade"
+
+[node name="SellButton" type="Button" parent="UIManager/UpgradePanel/Panel/MarginContainer/VBoxContainer" unique_id=2013707530]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+text = "Sell (50% refund)"
+
+[node name="CloseButton" type="Button" parent="UIManager/UpgradePanel/Panel/MarginContainer/VBoxContainer" unique_id=929838738]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+text = "Close"
+
+[node name="PausePanel" type="Control" parent="UIManager" unique_id=1720641702]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Bg" type="ColorRect" parent="UIManager/PausePanel" unique_id=50940382]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5)
+
+[node name="Panel" type="PanelContainer" parent="UIManager/PausePanel" unique_id=612543247]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -125.0
+offset_right = 200.0
+offset_bottom = 125.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UIManager/PausePanel/Panel" unique_id=271447863]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UIManager/PausePanel/Panel/MarginContainer" unique_id=1824956951]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="UIManager/PausePanel/Panel/MarginContainer/VBoxContainer" unique_id=2021299228]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
 text = "PAUSED"
 horizontal_alignment = 1
 
-[node name="ResumeButton" type="Button" parent="UIManager/PauseMenu/Panel/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="UIManager/PausePanel/Panel/MarginContainer/VBoxContainer" unique_id=1076474179]
+layout_mode = 2
+
+[node name="ResumeButton" type="Button" parent="UIManager/PausePanel/Panel/MarginContainer/VBoxContainer" unique_id=1790174508]
+custom_minimum_size = Vector2(0, 35)
 layout_mode = 2
 text = "Resume"
 
-[node name="SaveButton" type="Button" parent="UIManager/PauseMenu/Panel/VBoxContainer"]
+[node name="SaveButton" type="Button" parent="UIManager/PausePanel/Panel/MarginContainer/VBoxContainer" unique_id=1339768388]
+custom_minimum_size = Vector2(0, 35)
 layout_mode = 2
 text = "Save Game"
 
-[node name="MainMenuButton" type="Button" parent="UIManager/PauseMenu/Panel/VBoxContainer"]
+[node name="RestartButton" type="Button" parent="UIManager/PausePanel/Panel/MarginContainer/VBoxContainer" unique_id=1276288463]
+custom_minimum_size = Vector2(0, 35)
 layout_mode = 2
-text = "Main Menu"
+text = "Restart"
 
-[node name="GameOverPanel" type="Control" parent="UIManager"]
+[node name="GameOverPanel" type="Control" parent="UIManager" unique_id=562831600]
 visible = false
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="PanelContainer" parent="UIManager/GameOverPanel"]
-offset_left = 200.0
-offset_top = 150.0
-offset_right = 600.0
-offset_bottom = 350.0
+[node name="Bg" type="ColorRect" parent="UIManager/GameOverPanel" unique_id=1291502134]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="PanelContainer" parent="UIManager/GameOverPanel" unique_id=2140286725]
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -125.0
+offset_right = 250.0
+offset_bottom = 125.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UIManager/GameOverPanel/Panel"]
+[node name="MarginContainer" type="MarginContainer" parent="UIManager/GameOverPanel/Panel" unique_id=647611030]
 layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
 
-[node name="Title" type="Label" parent="UIManager/GameOverPanel/Panel/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UIManager/GameOverPanel/Panel/MarginContainer" unique_id=220252586]
 layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="UIManager/GameOverPanel/Panel/MarginContainer/VBoxContainer" unique_id=1328907380]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
 text = "GAME OVER"
 horizontal_alignment = 1
 
-[node name="RestartButton" type="Button" parent="UIManager/GameOverPanel/Panel/VBoxContainer"]
+[node name="ReasonLabel" type="Label" parent="UIManager/GameOverPanel/Panel/MarginContainer/VBoxContainer" unique_id=1338842467]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "You went bankrupt!"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="UIManager/GameOverPanel/Panel/MarginContainer/VBoxContainer" unique_id=455301074]
+layout_mode = 2
+
+[node name="RestartButton" type="Button" parent="UIManager/GameOverPanel/Panel/MarginContainer/VBoxContainer" unique_id=756596076]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 text = "Restart"
 
-[node name="NotificationLabel" type="Label" parent="UIManager"]
+[node name="StartPanel" type="Control" parent="UIManager" unique_id=703580803]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Bg" type="ColorRect" parent="UIManager/StartPanel" unique_id=925165554]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.14, 0.18, 1)
+
+[node name="Panel" type="PanelContainer" parent="UIManager/StartPanel" unique_id=1831448937]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -175.0
+offset_right = 350.0
+offset_bottom = 175.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UIManager/StartPanel/Panel" unique_id=766925133]
+layout_mode = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UIManager/StartPanel/Panel/MarginContainer" unique_id=745925455]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="TitleLabel" type="Label" parent="UIManager/StartPanel/Panel/MarginContainer/VBoxContainer" unique_id=2042861839]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "PHONEWORLD"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="UIManager/StartPanel/Panel/MarginContainer/VBoxContainer" unique_id=1348614184]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Build your phone empire!"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="UIManager/StartPanel/Panel/MarginContainer/VBoxContainer" unique_id=1973065369]
+layout_mode = 2
+
+[node name="InfoLabel" type="Label" parent="UIManager/StartPanel/Panel/MarginContainer/VBoxContainer" unique_id=237071109]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "WASD - Move | Right Click - Capture Mouse | Scroll - Zoom | B - Build | 1-4 - Speed | ESC - Pause"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="StartButton" type="Button" parent="UIManager/StartPanel/Panel/MarginContainer/VBoxContainer" unique_id=4026384]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "START GAME"
+
+[node name="Notification" type="Label" parent="UIManager" unique_id=1990014446]
 visible = false
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -200.0
-offset_top = 70.0
-offset_right = 200.0
-offset_bottom = 100.0
+offset_left = -250.0
+offset_top = 90.0
+offset_right = 250.0
+offset_bottom = 120.0
 grow_horizontal = 2
-text = ""
+theme_override_font_sizes/font_size = 15
 horizontal_alignment = 1

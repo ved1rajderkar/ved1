@@ -1,40 +1,47 @@
 extends Node
 
-## Handles saving and loading game state to disk.
-
 const SAVE_PATH: String = "user://savegame.json"
 
-signal game_saved
-signal game_loaded
+signal saved
+signal loaded
+signal save_failed
+signal load_failed
 
 
-func save_game(data: Dictionary) -> bool:
-	var json_string: String = JSON.stringify(data, "\t")
+func save_game() -> bool:
+	var data: Dictionary = _build_save_data()
+	var json: String = JSON.stringify(data, "\t")
 	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if not file:
+		save_failed.emit()
 		return false
-	file.store_string(json_string)
+	file.store_string(json)
 	file.close()
-	game_saved.emit()
+	saved.emit()
 	return true
 
 
-func load_game() -> Dictionary:
+func load_game() -> bool:
 	if not FileAccess.file_exists(SAVE_PATH):
-		return {}
+		load_failed.emit()
+		return false
 	var file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.READ)
 	if not file:
-		return {}
-	var json_string: String = file.get_as_text()
+		load_failed.emit()
+		return false
+	var json_text: String = file.get_as_text()
 	file.close()
-
-	var json: JSON = JSON.new()
-	var error: Error = json.parse(json_string)
-	if error != OK:
-		return {}
-
-	game_loaded.emit()
-	return json.data as Dictionary
+	var parser: JSON = JSON.new()
+	if parser.parse(json_text) != OK:
+		load_failed.emit()
+		return false
+	var data: Variant = parser.data
+	if not data is Dictionary:
+		load_failed.emit()
+		return false
+	_apply_save_data(data as Dictionary)
+	loaded.emit()
+	return true
 
 
 func has_save() -> bool:
@@ -46,42 +53,84 @@ func delete_save() -> void:
 		DirAccess.remove_absolute(SAVE_PATH)
 
 
-func build_save_data(
-	game: Node, economy: Node, time: Node, buildings: Node
-) -> Dictionary:
+func _build_save_data() -> Dictionary:
 	return {
 		"version": 1,
-		"company_name": game.company_name,
-		"total_play_time": game.total_play_time,
-		"economy": economy.get_stats(),
-		"time": time.get_stats(),
-		"buildings": _serialize_buildings(buildings.get_all_buildings()),
+		"company_name": GameManager.company_name,
+		"current_day": GameManager.current_day,
+		"play_time": GameManager.play_time,
+		"economy": {
+			"money": Economy.money,
+			"total_earned": Economy.total_earned,
+			"total_spent": Economy.total_spent,
+			"workers": Economy.workers,
+			"materials": Economy.materials,
+			"happiness": Economy.happiness,
+			"reputation": Economy.reputation,
+		},
+		"time": {
+			"hour": TimeManager.current_hour,
+			"minute": TimeManager.current_minute,
+			"speed": TimeManager.game_speed,
+		},
+		"buildings": _serialize_buildings(),
 	}
 
 
-func apply_save_data(data: Dictionary, game: Node, economy: Node, time: Node, buildings: Node) -> void:
-	if data.is_empty():
+func _get_bs() -> Node3D:
+	var tree: SceneTree = Engine.get_main_loop() as SceneTree
+	if tree:
+		return tree.root.get_node_or_null("Main/BuildingSystem")
+	return null
+
+
+func _apply_save_data(data: Dictionary) -> void:
+	GameManager.company_name = data.get("company_name", "PhoneWorld")
+	GameManager.current_day = data.get("current_day", 1)
+	GameManager.play_time = data.get("play_time", 0.0)
+
+	var econ: Dictionary = data.get("economy", {})
+	Economy.money = econ.get("money", 5000)
+	Economy.total_earned = econ.get("total_earned", 0)
+	Economy.total_spent = econ.get("total_spent", 0)
+	Economy.workers = econ.get("workers", 10)
+	Economy.materials = econ.get("materials", 100)
+	Economy.happiness = econ.get("happiness", 80)
+	Economy.reputation = econ.get("reputation", 50)
+
+	var tmr: Dictionary = data.get("time", {})
+	TimeManager.current_hour = tmr.get("hour", 6)
+	TimeManager.current_minute = tmr.get("minute", 0)
+	TimeManager.game_speed = tmr.get("speed", 1.0)
+
+	var bs: Node3D = _get_bs()
+	if not bs:
 		return
+	bs.clear_all()
+	var bdata: Array = data.get("buildings", [])
+	for bentry: Dictionary in bdata:
+		var btype: String = bentry.get("type", "")
+		var pos_data: Dictionary = bentry.get("position", {})
+		var pos: Vector3 = Vector3(
+			pos_data.get("x", 0.0),
+			pos_data.get("y", 0.05),
+			pos_data.get("z", 0.0)
+		)
+		var building: Node3D = bs._create_building(btype, pos)
+		var level: int = bentry.get("level", 1)
+		building.set_meta("level", level)
+		bs.placed_buildings.append(building)
 
-	game.company_name = data.get("company_name", game.company_name)
-	game.total_play_time = data.get("total_play_time", 0.0)
-
-	var econ_data: Dictionary = data.get("economy", {})
-	economy.money = econ_data.get("money", 5000)
-	economy.total_earned = econ_data.get("total_earned", 0)
-	economy.total_spent = econ_data.get("total_spent", 0)
-	economy.resources = econ_data.get("resources", economy.resources)
-
-	var time_data: Dictionary = data.get("time", {})
-	time.current_day = time_data.get("day", 1)
-	time.current_hour = time_data.get("hour", 6)
-	time.current_minute = time_data.get("minute", 0)
-	time.game_speed = time_data.get("speed", 1.0)
+	Economy.recalculate_totals()
+	Economy.money_changed.emit(Economy.money)
 
 
-func _serialize_buildings(buildings: Array[Node3D]) -> Array[Dictionary]:
+func _serialize_buildings() -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
-	for b in buildings:
+	var bs: Node3D = _get_bs()
+	if not bs:
+		return result
+	for b: Node3D in bs.get_all_buildings():
 		result.append({
 			"type": b.get_meta("building_type", ""),
 			"level": b.get_meta("level", 1),

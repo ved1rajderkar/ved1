@@ -1,104 +1,135 @@
 class_name BuildingData
 extends RefCounted
 
-## Static data for all building types.
-
 const BUILDINGS: Dictionary = {
-	"small_shop": {
-		"name": "Small Shop",
-		"description": "A basic retail shop.",
-		"cost": 500,
-		"size": Vector3(4, 3, 4),
-		"color": Color(0.8, 0.6, 0.3),
-		"income_per_day": 50,
-		"upkeep_per_day": 10,
-		"workers_required": 2,
-		"materials_required": 20,
-		"category": "commercial",
+	"display_shelf": {
+		"name": "Display Shelf",
+		"description": "Holds phones for customers to browse.",
+		"cost": 300,
+		"upgrade_cost_mult": 1.5,
+		"size": Vector3(2.0, 1.5, 0.8),
+		"floor_size": Vector3(2.2, 0.1, 1.0),
+		"color": Color(0.55, 0.4, 0.25),
+		"floor_color": Color(0.45, 0.32, 0.2),
+		"income": 40,
+		"upkeep": 5,
+		"workers": 1,
+		"materials": 10,
+		"category": "retail",
+		"max_level": 5,
 	},
-	"medium_shop": {
-		"name": "Medium Shop",
-		"description": "A larger retail space.",
-		"cost": 1500,
-		"size": Vector3(6, 4, 6),
-		"color": Color(0.7, 0.5, 0.2),
-		"income_per_day": 150,
-		"upkeep_per_day": 25,
-		"workers_required": 4,
-		"materials_required": 40,
-		"category": "commercial",
-	},
-	"warehouse": {
-		"name": "Warehouse",
-		"description": "Stores materials and goods.",
-		"cost": 1000,
-		"size": Vector3(8, 5, 6),
-		"color": Color(0.5, 0.5, 0.55),
-		"income_per_day": 30,
-		"upkeep_per_day": 15,
-		"workers_required": 1,
-		"materials_required": 50,
-		"category": "storage",
-	},
-	"office": {
-		"name": "Office",
-		"description": "Increases worker efficiency.",
-		"cost": 2000,
-		"size": Vector3(6, 5, 6),
-		"color": Color(0.3, 0.4, 0.7),
-		"income_per_day": 80,
-		"upkeep_per_day": 20,
-		"workers_required": 3,
-		"materials_required": 30,
-		"category": "admin",
-	},
-	"factory": {
-		"name": "Factory",
-		"description": "Produces materials over time.",
-		"cost": 3000,
-		"size": Vector3(10, 6, 8),
-		"color": Color(0.4, 0.4, 0.4),
-		"income_per_day": 200,
-		"upkeep_per_day": 50,
-		"workers_required": 8,
-		"materials_required": 60,
-		"category": "production",
-	},
-	"cafeteria": {
-		"name": "Cafeteria",
-		"description": "Boosts worker happiness.",
+	"premium_shelf": {
+		"name": "Premium Display",
+		"description": "High-end phone display, attracts wealthy customers.",
 		"cost": 800,
-		"size": Vector3(5, 3, 5),
-		"color": Color(0.9, 0.7, 0.4),
-		"income_per_day": 20,
-		"upkeep_per_day": 12,
-		"workers_required": 2,
-		"materials_required": 15,
-		"category": "amenity",
+		"upgrade_cost_mult": 1.8,
+		"size": Vector3(2.5, 2.0, 1.0),
+		"floor_size": Vector3(2.7, 0.1, 1.2),
+		"color": Color(0.2, 0.2, 0.25),
+		"floor_color": Color(0.15, 0.15, 0.18),
+		"income": 120,
+		"upkeep": 15,
+		"workers": 2,
+		"materials": 25,
+		"category": "retail",
+		"max_level": 5,
 	},
-	"park": {
-		"name": "Park",
-		"description": "Increases nearby happiness.",
+	"cash_register": {
+		"name": "Cash Register",
+		"description": "Processes sales. Required for income.",
+		"cost": 500,
+		"upgrade_cost_mult": 1.6,
+		"size": Vector3(1.5, 1.2, 0.8),
+		"floor_size": Vector3(1.7, 0.1, 1.0),
+		"color": Color(0.3, 0.3, 0.35),
+		"floor_color": Color(0.25, 0.25, 0.28),
+		"income": 0,
+		"upkeep": 10,
+		"workers": 1,
+		"materials": 15,
+		"category": "counter",
+		"max_level": 3,
+		"required": true,
+	},
+	"repair_bench": {
+		"name": "Repair Bench",
+		"description": "Repairs phones, generates bonus income.",
+		"cost": 600,
+		"upgrade_cost_mult": 1.5,
+		"size": Vector3(2.0, 1.0, 1.0),
+		"floor_size": Vector3(2.2, 0.1, 1.2),
+		"color": Color(0.4, 0.5, 0.45),
+		"floor_color": Color(0.32, 0.4, 0.35),
+		"income": 60,
+		"upkeep": 8,
+		"workers": 2,
+		"materials": 20,
+		"category": "service",
+		"max_level": 4,
+	},
+	"storage_room": {
+		"name": "Storage Room",
+		"description": "Stores extra inventory and materials.",
 		"cost": 400,
-		"size": Vector3(6, 1, 6),
-		"color": Color(0.2, 0.7, 0.3),
-		"income_per_day": 0,
-		"upkeep_per_day": 5,
-		"workers_required": 0,
-		"materials_required": 10,
-		"category": "amenity",
+		"upgrade_cost_mult": 1.4,
+		"size": Vector3(3.0, 2.5, 3.0),
+		"floor_size": Vector3(3.2, 0.1, 3.2),
+		"color": Color(0.5, 0.48, 0.45),
+		"floor_color": Color(0.4, 0.38, 0.35),
+		"income": 0,
+		"upkeep": 5,
+		"workers": 0,
+		"materials": 30,
+		"category": "storage",
+		"max_level": 3,
 	},
-	"security_hub": {
-		"name": "Security Hub",
-		"description": "Prevents random events and theft.",
-		"cost": 2500,
-		"size": Vector3(5, 4, 5),
-		"color": Color(0.2, 0.2, 0.6),
-		"income_per_day": 0,
-		"upkeep_per_day": 30,
-		"workers_required": 3,
-		"materials_required": 25,
-		"category": "admin",
+	"break_room": {
+		"name": "Break Room",
+		"description": "Workers rest here. Boosts happiness.",
+		"cost": 350,
+		"upgrade_cost_mult": 1.3,
+		"size": Vector3(3.0, 2.5, 3.0),
+		"floor_size": Vector3(3.2, 0.1, 3.2),
+		"color": Color(0.7, 0.6, 0.4),
+		"floor_color": Color(0.6, 0.5, 0.32),
+		"income": 0,
+		"upkeep": 8,
+		"workers": 0,
+		"materials": 15,
+		"category": "amenity",
+		"max_level": 3,
+	},
+	"ad_sign": {
+		"name": "Advertising Sign",
+		"description": "Attracts more customers. Boosts reputation.",
+		"cost": 250,
+		"upgrade_cost_mult": 1.4,
+		"size": Vector3(1.0, 2.5, 0.3),
+		"floor_size": Vector3(1.2, 0.1, 0.5),
+		"color": Color(0.8, 0.2, 0.2),
+		"floor_color": Color(0.6, 0.15, 0.15),
+		"income": 10,
+		"upkeep": 3,
+		"workers": 0,
+		"materials": 5,
+		"category": "marketing",
+		"max_level": 4,
+	},
+	"security_cam": {
+		"name": "Security Camera",
+		"description": "Prevents theft. Reduces losses.",
+		"cost": 450,
+		"upgrade_cost_mult": 1.5,
+		"size": Vector3(0.4, 0.4, 0.4),
+		"floor_size": Vector3(0.6, 0.1, 0.6),
+		"color": Color(0.15, 0.15, 0.2),
+		"floor_color": Color(0.1, 0.1, 0.12),
+		"income": 0,
+		"upkeep": 6,
+		"workers": 0,
+		"materials": 8,
+		"category": "security",
+		"max_level": 3,
 	},
 }
 
@@ -114,19 +145,33 @@ static func get_all_types() -> Array[String]:
 	return types
 
 
-static func get_by_category(category: String) -> Dictionary:
-	var result: Dictionary = {}
+static func get_types_by_category(category: String) -> Array[String]:
+	var types: Array[String] = []
 	for key in BUILDINGS:
 		if BUILDINGS[key].get("category", "") == category:
-			result[key] = BUILDINGS[key]
-	return result
+			types.append(key)
+	return types
 
 
 static func get_categories() -> Array[String]:
-	var cats: Dictionary = {}
-	for key in BUILDINGS:
-		cats[BUILDINGS[key].get("category", "other")] = true
+	var seen: Dictionary = {}
 	var result: Array[String] = []
-	for c in cats:
-		result.append(c)
+	for key in BUILDINGS:
+		var cat: String = BUILDINGS[key].get("category", "other")
+		if not seen.has(cat):
+			seen[cat] = true
+			result.append(cat)
 	return result
+
+
+static func get_upgrade_cost(building_type: String, current_level: int) -> int:
+	var data: Dictionary = get_building(building_type)
+	if data.is_empty():
+		return 999999
+	var base: int = data.get("cost", 0)
+	var mult: float = data.get("upgrade_cost_mult", 1.5)
+	return int(base * pow(mult, current_level - 1))
+
+
+static func get_max_level(building_type: String) -> int:
+	return get_building(building_type).get("max_level", 5)
